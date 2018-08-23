@@ -39,14 +39,119 @@ Write-Line -Length 50 -Path $log
 
 
 
-$newspage = (Get-WJPath -Name newspage).Path
-$mailMsg = $mailMsg + (Write-Log -Verb "NEWSPAGE" -Noun $newspage -Path $log -Type Long -Status Normal -Output String) + "`n"
+$public = (Get-WJPath -Name public).Path
+$public_adphoto = (Get-WJPath -Name public_adphoto).Path
+$public_adtext = (Get-WJPath -Name public_adtext).Path
+$camp = (Get-WJPath -Name camp).Path
+$campDate = (Get-Date).AddDays(-180)
+$workDate = Get-Date
+$workPath = ($camp + $workDate.ToString("yyyyMMdd") + "\")
 
-# Flag hasError 
+Write-Log -Verb "public" -Noun $public -Path $log -Type Short -Status Normal
+Write-Log -Verb "public_adphoto" -Noun $public_adphoto -Path $log -Type Short -Status Normal
+Write-Log -Verb "public_adtext" -Noun $public_adtext -Path $log -Type Short -Status Normal
+Write-Log -Verb "camp" -Noun $camp -Path $log -Type Short -Status Normal
+Write-Log -Verb "campDate" -Noun $campDate -Path $log -Type Short -Status Normal
+Write-Log -Verb "workDate" -Noun $workDate -Path $log -Type Short -Status Normal
+Write-Log -Verb "workPath" -Noun $workPath -Path $log -Type Short -Status Normal
 
-if( $false ){
-    $hasError = $true
+
+
+# Move ADPHOTO files
+
+Get-ChildItemPlus $public_adphoto | Where-Object { 
+
+    -not $_.PSIsContainer -and ($_.CreationTime -lt $campDate)
+
+} | Sort-Object -Descending | Move-Files -From $public -To $workPath | ForEach-Object{
+
+    Write-Log -Verb "moveFrom" -Noun $_.MoveFrom -Path $log -Type Short -Status Normal
+    Write-Log -Verb "moveTo" -Noun $_.MoveTo -Path $log -Type Short -Status Normal
+    Write-Log -Verb $_.Verb -Noun $_.Noun -Path $log -Type Long -Status $_.Status
+
+    if($_.Status -eq "Bad"){
+
+        $mailMsg = $mailMsg + (Write-Log -Verb "Exception" -Noun $_.Exception -Path $log -Type Short -Status $_.Status -Output String) + "`n"
+        $hasError = $true
+
+    }
+
 }
+
+
+
+# Delete empty folders in ADPHOTO
+
+Get-ChildItemPlus $public_adphoto | Where-Object { 
+
+     $_.PSIsContainer 
+
+} | Sort-Object -Descending | ForEach-Object{
+
+    if((Get-ChildItem $_.FullName).Count -eq 0){
+
+        try{
+            $temp = $_.FullName
+            Remove-Item $_ -Recurse -Force -ErrorAction Stop
+            Write-Log -Verb "REMOVE" -Noun $temp -Path $log -Type Long -Status Good
+        }catch{
+            $mailMsg = $mailMsg + (Write-Log -Verb "REMOVE" -Noun $temp -Path $log -Type Long -Status Bad -Output String) + "`n"
+            $mailMsg = $mailMsg + (Write-Log -Verb "Exception" -Noun $_.Exception.Message -Path $log -Type Short -Status Bad -Output String) + "`n"
+        }
+
+    }
+
+}
+
+
+
+# Move ADTEXT files
+
+Get-ChildItemPlus $public_adtext | Where-Object { 
+
+    -not $_.PSIsContainer -and ($_.CreationTime -lt $campDate)
+
+} | Sort-Object -Descending | Move-Files -From $public -To $workPath | ForEach-Object{
+
+    Write-Log -Verb "moveFrom" -Noun $_.MoveFrom -Path $log -Type Short -Status Normal
+    Write-Log -Verb "moveTo" -Noun $_.MoveTo -Path $log -Type Short -Status Normal
+    Write-Log -Verb $_.Verb -Noun $_.Noun -Path $log -Type Long -Status $_.Status
+
+    if($_.Status -eq "Bad"){
+
+        $mailMsg = $mailMsg + (Write-Log -Verb "Exception" -Noun $_.Exception -Path $log -Type Short -Status $_.Status -Output String) + "`n"
+        $hasError = $true
+
+    }
+
+}
+
+
+
+# Delete empty folders in ADTEXT
+
+Get-ChildItemPlus $public_adtext | Where-Object { 
+
+     $_.PSIsContainer
+
+} | Sort-Object -Descending | ForEach-Object{
+
+    if((Get-ChildItem $_.FullName).Count -eq 0){
+
+        try{
+            $temp = $_.FullName
+            Remove-Item $_ -Recurse -Force -ErrorAction Stop
+            Write-Log -Verb "REMOVE" -Noun $temp -Path $log -Type Long -Status Good
+        }catch{
+            $mailMsg = $mailMsg + (Write-Log -Verb "REMOVE" -Noun $temp -Path $log -Type Long -Status Bad -Output String) + "`n"
+            $mailMsg = $mailMsg + (Write-Log -Verb "Exception" -Noun $_.Exception.Message -Path $log -Type Short -Status Bad -Output String) + "`n"
+        }
+
+    }
+
+}
+
+
 
 
 
