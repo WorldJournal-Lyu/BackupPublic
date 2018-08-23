@@ -55,9 +55,14 @@ Write-Log -Verb "campDate" -Noun $campDate -Path $log -Type Short -Status Normal
 Write-Log -Verb "workDate" -Noun $workDate -Path $log -Type Short -Status Normal
 Write-Log -Verb "workPath" -Noun $workPath -Path $log -Type Short -Status Normal
 
+Write-Line -Length 50 -Path $log
+
+
 
 
 # Move ADPHOTO files
+
+Write-Log -Verb "MOVE FILES" -Noun $public_adphoto -Path $log -Type Long -Status Normal
 
 Get-ChildItemPlus $public_adphoto | Where-Object { 
 
@@ -78,9 +83,14 @@ Get-ChildItemPlus $public_adphoto | Where-Object {
 
 }
 
+Write-Line -Length 50 -Path $log
+
+
 
 
 # Delete empty folders in ADPHOTO
+
+Write-Log -Verb "REMOVE EMPTY FOLDERS" -Noun $public_adphoto -Path $log -Type Long -Status Normal
 
 Get-ChildItemPlus $public_adphoto | Where-Object { 
 
@@ -91,21 +101,31 @@ Get-ChildItemPlus $public_adphoto | Where-Object {
     if((Get-ChildItem $_.FullName).Count -eq 0){
 
         try{
+
             $temp = $_.FullName
             Remove-Item $_ -Recurse -Force -ErrorAction Stop
             Write-Log -Verb "REMOVE" -Noun $temp -Path $log -Type Long -Status Good
+
         }catch{
+
             $mailMsg = $mailMsg + (Write-Log -Verb "REMOVE" -Noun $temp -Path $log -Type Long -Status Bad -Output String) + "`n"
             $mailMsg = $mailMsg + (Write-Log -Verb "Exception" -Noun $_.Exception.Message -Path $log -Type Short -Status Bad -Output String) + "`n"
+            $hasError = $true
+
         }
 
     }
 
 }
 
+Write-Line -Length 50 -Path $log
+
+
 
 
 # Move ADTEXT files
+
+Write-Log -Verb "MOVE FILES" -Noun $public_adtext -Path $log -Type Long -Status Normal
 
 Get-ChildItemPlus $public_adtext | Where-Object { 
 
@@ -126,9 +146,13 @@ Get-ChildItemPlus $public_adtext | Where-Object {
 
 }
 
+Write-Line -Length 50 -Path $log
+
 
 
 # Delete empty folders in ADTEXT
+
+Write-Log -Verb "REMOVE EMPTY FOLDERS" -Noun $public_adtext -Path $log -Type Long -Status Normal
 
 Get-ChildItemPlus $public_adtext | Where-Object { 
 
@@ -139,12 +163,17 @@ Get-ChildItemPlus $public_adtext | Where-Object {
     if((Get-ChildItem $_.FullName).Count -eq 0){
 
         try{
+
             $temp = $_.FullName
             Remove-Item $_ -Recurse -Force -ErrorAction Stop
             Write-Log -Verb "REMOVE" -Noun $temp -Path $log -Type Long -Status Good
+
         }catch{
+
             $mailMsg = $mailMsg + (Write-Log -Verb "REMOVE" -Noun $temp -Path $log -Type Long -Status Bad -Output String) + "`n"
             $mailMsg = $mailMsg + (Write-Log -Verb "Exception" -Noun $_.Exception.Message -Path $log -Type Short -Status Bad -Output String) + "`n"
+            $hasError = $true
+
         }
 
     }
@@ -156,6 +185,8 @@ Get-ChildItemPlus $public_adtext | Where-Object {
 
 
 ###################################################################################
+
+Write-Line -Length 50 -Path $log
 
 # Delete temp folder
 
