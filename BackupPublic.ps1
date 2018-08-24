@@ -43,7 +43,7 @@ $public = (Get-WJPath -Name public).Path
 $public_adphoto = (Get-WJPath -Name public_adphoto).Path
 $public_adtext = (Get-WJPath -Name public_adtext).Path
 $camp = (Get-WJPath -Name camp).Path
-$campDate = (Get-Date).AddDays(-180)
+$campDate = (Get-Date).AddDays(-181)
 $workDate = Get-Date
 $workPath = ($camp + $workDate.ToString("yyyyMMdd") + "\")
 
@@ -60,9 +60,40 @@ Write-Line -Length 50 -Path $log
 
 
 
+# Rename files that contains brackets in ADPHOTO
+
+Write-Log -Verb "REMOVE BRACKET" -Noun $public_adphoto -Path $log -Type Long -Status System
+
+Get-ChildItemPlus $public_adphoto | Sort-Object -Descending | ForEach-Object { 
+
+    if($_.BaseName -match "\["){
+
+        Write-Log -Verb "HAS BRACKET" -Noun $_.FullName -Path $log -Type Long -Status Normal
+
+        $newname = ($_.BaseName.Replace("[","(")).Replace("]",")") + "_r" + $_.Extension
+        $parent  = Split-Path $_.FullName
+        $newpath = Join-Path -Path $parent -ChildPath $newname
+
+        Write-Log -Verb "newname" -Noun $newname -Path $log -Type Short -Status Normal
+        Write-Log -Verb "newpath" -Noun $newpath -Path $log -Type Short -Status Normal
+
+        try{
+            Rename-Item -LiteralPath $_.FullName -NewName $newpath
+            Write-Log -Verb "RENAME" -Noun $newpath -Path $log -Type Long -Status Good
+        }catch{
+            Write-Log -Verb "RENAME" -Noun $newpath -Path $log -Type Long -Status Bad
+        }
+
+    }
+
+}
+
+
+
+
 # Move ADPHOTO files
 
-Write-Log -Verb "MOVE FILES" -Noun $public_adphoto -Path $log -Type Long -Status Normal
+Write-Log -Verb "MOVE FILES" -Noun $public_adphoto -Path $log -Type Long -Status System
 
 Get-ChildItemPlus $public_adphoto | Where-Object { 
 
@@ -90,7 +121,7 @@ Write-Line -Length 50 -Path $log
 
 # Delete empty folders in ADPHOTO
 
-Write-Log -Verb "REMOVE EMPTY FOLDERS" -Noun $public_adphoto -Path $log -Type Long -Status Normal
+Write-Log -Verb "REMOVE EMPTY FOLDERS" -Noun $public_adphoto -Path $log -Type Long -Status System
 
 Get-ChildItemPlus $public_adphoto | Where-Object { 
 
@@ -123,9 +154,40 @@ Write-Line -Length 50 -Path $log
 
 
 
+# Rename files that contains brackets in ADTEXT
+
+Write-Log -Verb "REMOVE BRACKET" -Noun $public_adtext -Path $log -Type Long -Status System
+
+Get-ChildItemPlus $public_adtext | Sort-Object -Descending | ForEach-Object { 
+
+    if($_.BaseName -match "\["){
+
+        Write-Log -Verb "HAS BRACKET" -Noun $_.FullName -Path $log -Type Long -Status Normal
+
+        $newname = ($_.BaseName.Replace("[","(")).Replace("]",")") + "_r" + $_.Extension
+        $parent  = Split-Path $_.FullName
+        $newpath = Join-Path -Path $parent -ChildPath $newname
+
+        Write-Log -Verb "newname" -Noun $newname -Path $log -Type Short -Status Normal
+        Write-Log -Verb "newpath" -Noun $newpath -Path $log -Type Short -Status Normal
+
+        try{
+            Rename-Item -LiteralPath $_.FullName -NewName $newpath
+            Write-Log -Verb "RENAME" -Noun $newpath -Path $log -Type Long -Status Good
+        }catch{
+            Write-Log -Verb "RENAME" -Noun $newpath -Path $log -Type Long -Status Bad
+        }
+
+    }
+
+}
+
+
+
+
 # Move ADTEXT files
 
-Write-Log -Verb "MOVE FILES" -Noun $public_adtext -Path $log -Type Long -Status Normal
+Write-Log -Verb "MOVE FILES" -Noun $public_adtext -Path $log -Type Long -Status System
 
 Get-ChildItemPlus $public_adtext | Where-Object { 
 
@@ -152,7 +214,7 @@ Write-Line -Length 50 -Path $log
 
 # Delete empty folders in ADTEXT
 
-Write-Log -Verb "REMOVE EMPTY FOLDERS" -Noun $public_adtext -Path $log -Type Long -Status Normal
+Write-Log -Verb "REMOVE EMPTY FOLDERS" -Noun $public_adtext -Path $log -Type Long -Status System
 
 Get-ChildItemPlus $public_adtext | Where-Object { 
 
@@ -213,4 +275,4 @@ $emailParam = @{
     ScriptPath = $scriptPath
     Attachment = $log
 }
-Emailv2 @emailParam
+#Emailv2 @emailParam
