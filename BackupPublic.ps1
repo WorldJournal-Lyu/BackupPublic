@@ -43,7 +43,7 @@ $public = (Get-WJPath -Name public).Path
 $public_adphoto = (Get-WJPath -Name public_adphoto).Path
 $public_adtext = (Get-WJPath -Name public_adtext).Path
 $camp = (Get-WJPath -Name camp).Path
-$campDate = (Get-Date).AddDays(-181)
+$campDate = (Get-Date).AddDays(-180)
 $workDate = Get-Date
 $workPath = ($camp + $workDate.ToString("yyyyMMdd") + "\")
 
