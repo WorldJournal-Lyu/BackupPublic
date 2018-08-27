@@ -62,7 +62,7 @@ Write-Line -Length 50 -Path $log
 
 # Rename files that contains brackets in ADPHOTO
 
-Write-Log -Verb "REMOVE BRACKET" -Noun $public_adphoto -Path $log -Type Long -Status System
+Write-Log -Verb "START REMOVE BRACKET" -Noun $public_adphoto -Path $log -Type Long -Status System
 
 Get-ChildItemPlus $public_adphoto | Sort-Object -Descending | ForEach-Object { 
 
@@ -93,7 +93,7 @@ Get-ChildItemPlus $public_adphoto | Sort-Object -Descending | ForEach-Object {
 
 # Move ADPHOTO files
 
-Write-Log -Verb "MOVE FILES" -Noun $public_adphoto -Path $log -Type Long -Status System
+Write-Log -Verb "START MOVE FILES" -Noun $public_adphoto -Path $log -Type Long -Status System
 
 Get-ChildItemPlus $public_adphoto | Where-Object { 
 
@@ -121,7 +121,7 @@ Write-Line -Length 50 -Path $log
 
 # Delete empty folders in ADPHOTO
 
-Write-Log -Verb "REMOVE EMPTY FOLDERS" -Noun $public_adphoto -Path $log -Type Long -Status System
+Write-Log -Verb "START REMOVE EMPTY FOLDERS" -Noun $public_adphoto -Path $log -Type Long -Status System
 
 Get-ChildItemPlus $public_adphoto | Where-Object { 
 
@@ -156,7 +156,7 @@ Write-Line -Length 50 -Path $log
 
 # Rename files that contains brackets in ADTEXT
 
-Write-Log -Verb "REMOVE BRACKET" -Noun $public_adtext -Path $log -Type Long -Status System
+Write-Log -Verb "START REMOVE BRACKET" -Noun $public_adtext -Path $log -Type Long -Status System
 
 Get-ChildItemPlus $public_adtext | Sort-Object -Descending | ForEach-Object { 
 
@@ -187,7 +187,7 @@ Get-ChildItemPlus $public_adtext | Sort-Object -Descending | ForEach-Object {
 
 # Move ADTEXT files
 
-Write-Log -Verb "MOVE FILES" -Noun $public_adtext -Path $log -Type Long -Status System
+Write-Log -Verb "START MOVE FILES" -Noun $public_adtext -Path $log -Type Long -Status System
 
 Get-ChildItemPlus $public_adtext | Where-Object { 
 
@@ -214,7 +214,7 @@ Write-Line -Length 50 -Path $log
 
 # Delete empty folders in ADTEXT
 
-Write-Log -Verb "REMOVE EMPTY FOLDERS" -Noun $public_adtext -Path $log -Type Long -Status System
+Write-Log -Verb "START REMOVE EMPTY FOLDERS" -Noun $public_adtext -Path $log -Type Long -Status System
 
 Get-ChildItemPlus $public_adtext | Where-Object { 
 
