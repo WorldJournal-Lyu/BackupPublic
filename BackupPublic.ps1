@@ -78,10 +78,16 @@ Get-ChildItemPlus $public_adphoto | Sort-Object -Descending | ForEach-Object {
         Write-Log -Verb "newpath" -Noun $newpath -Path $log -Type Short -Status Normal
 
         try{
+
             Rename-Item -LiteralPath $_.FullName -NewName $newpath
             Write-Log -Verb "RENAME" -Noun $newpath -Path $log -Type Long -Status Good
+
         }catch{
-            Write-Log -Verb "RENAME" -Noun $newpath -Path $log -Type Long -Status Bad
+
+            $mailMsg = $mailMsg + (Write-Log -Verb "RENAME" -Noun $newpath -Path $log -Type Long -Status Bad -Output String) + "`n"
+            $mailMsg = $mailMsg + (Write-Log -Verb "Exception" -Noun $_.Exception -Path $log -Type Short -Status Bad -Output String) + "`n"
+            $hasError = $true
+
         }
 
     }
@@ -172,10 +178,16 @@ Get-ChildItemPlus $public_adtext | Sort-Object -Descending | ForEach-Object {
         Write-Log -Verb "newpath" -Noun $newpath -Path $log -Type Short -Status Normal
 
         try{
+
             Rename-Item -LiteralPath $_.FullName -NewName $newpath
             Write-Log -Verb "RENAME" -Noun $newpath -Path $log -Type Long -Status Good
+
         }catch{
-            Write-Log -Verb "RENAME" -Noun $newpath -Path $log -Type Long -Status Bad
+
+            $mailMsg = $mailMsg + (Write-Log -Verb "RENAME" -Noun $newpath -Path $log -Type Long -Status Bad -Output String) + "`n"
+            $mailMsg = $mailMsg + (Write-Log -Verb "Exception" -Noun $_.Exception -Path $log -Type Short -Status Bad -Output String) + "`n"
+            $hasError = $true
+
         }
 
     }
