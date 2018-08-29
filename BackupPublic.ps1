@@ -109,13 +109,17 @@ Get-ChildItemPlus $public_adphoto | Where-Object {
 
     Write-Log -Verb "moveFrom" -Noun $_.MoveFrom -Path $log -Type Short -Status Normal
     Write-Log -Verb "moveTo" -Noun $_.MoveTo -Path $log -Type Short -Status Normal
-    Write-Log -Verb $_.Verb -Noun $_.Noun -Path $log -Type Long -Status $_.Status
 
     if($_.Status -eq "Bad"){
 
+        $mailMsg = $mailMsg + (Write-Log -Verb $_.Verb -Noun $_.Noun -Path $log -Type Long -Status $_.Status -Output String) + "`n"
         $mailMsg = $mailMsg + (Write-Log -Verb "Exception" -Noun $_.Exception -Path $log -Type Short -Status $_.Status -Output String) + "`n"
         $hasError = $true
 
+    }else{
+
+        Write-Log -Verb $_.Verb -Noun $_.Noun -Path $log -Type Long -Status $_.Status
+    
     }
 
 }
@@ -209,13 +213,17 @@ Get-ChildItemPlus $public_adtext | Where-Object {
 
     Write-Log -Verb "moveFrom" -Noun $_.MoveFrom -Path $log -Type Short -Status Normal
     Write-Log -Verb "moveTo" -Noun $_.MoveTo -Path $log -Type Short -Status Normal
-    Write-Log -Verb $_.Verb -Noun $_.Noun -Path $log -Type Long -Status $_.Status
 
     if($_.Status -eq "Bad"){
 
+        $mailMsg = $mailMsg + (Write-Log -Verb $_.Verb -Noun $_.Noun -Path $log -Type Long -Status $_.Status -Output String) + "`n"
         $mailMsg = $mailMsg + (Write-Log -Verb "Exception" -Noun $_.Exception -Path $log -Type Short -Status $_.Status -Output String) + "`n"
         $hasError = $true
 
+    }else{
+
+        Write-Log -Verb $_.Verb -Noun $_.Noun -Path $log -Type Long -Status $_.Status
+    
     }
 
 }
