@@ -60,68 +60,51 @@ Write-Line -Length 50 -Path $log
 
 
 
-# Rename files that contains brackets in ADPHOTO
+# 1.1 Rename files that contains brackets in ADPHOTO
 
 Write-Log -Verb "START REMOVE BRACKET" -Noun $public_adphoto -Path $log -Type Long -Status System
 
-Get-ChildItemPlus $public_adphoto | Sort-Object -Descending | ForEach-Object { 
-
+Get-ChildItem $public_adphoto -Recurse | Sort-Object FullName -Descending | ForEach-Object { 
     if($_.BaseName -match "\["){
-
         Write-Log -Verb "HAS BRACKET" -Noun $_.FullName -Path $log -Type Long -Status Normal
-
         $newname = ($_.BaseName.Replace("[","(")).Replace("]",")") + "_r" + $_.Extension
         $parent  = Split-Path $_.FullName
         $newpath = Join-Path -Path $parent -ChildPath $newname
-
         Write-Log -Verb "newname" -Noun $newname -Path $log -Type Short -Status Normal
         Write-Log -Verb "newpath" -Noun $newpath -Path $log -Type Short -Status Normal
-
         try{
-
             Rename-Item -LiteralPath $_.FullName -NewName $newpath
             Write-Log -Verb "RENAME" -Noun $newpath -Path $log -Type Long -Status Good
-
         }catch{
-
             $mailMsg = $mailMsg + (Write-Log -Verb "RENAME" -Noun $newpath -Path $log -Type Long -Status Bad -Output String) + "`n"
             $mailMsg = $mailMsg + (Write-Log -Verb "Exception" -Noun $_.Exception -Path $log -Type Short -Status Bad -Output String) + "`n"
             $hasError = $true
-
         }
-
     }
-
 }
 
+Write-Line -Length 50 -Path $log
 
 
 
-# Move ADPHOTO files
+
+
+# 1.2 Move ADPHOTO files
 
 Write-Log -Verb "START MOVE FILES" -Noun $public_adphoto -Path $log -Type Long -Status System
 
-Get-ChildItemPlus $public_adphoto | Where-Object { 
-
+Get-ChildItem $public_adphoto -Recurse | Where-Object { 
     -not $_.PSIsContainer -and ($_.CreationTime -lt $campDate)
-
-} | Sort-Object -Descending | Move-Files -From $public -To $workPath | ForEach-Object{
-
+} | Sort-Object FullName -Descending | Move-Files -From $public -To $workPath | ForEach-Object{
     Write-Log -Verb "moveFrom" -Noun $_.MoveFrom -Path $log -Type Short -Status Normal
     Write-Log -Verb "moveTo" -Noun $_.MoveTo -Path $log -Type Short -Status Normal
-
     if($_.Status -eq "Bad"){
-
         $mailMsg = $mailMsg + (Write-Log -Verb $_.Verb -Noun $_.Noun -Path $log -Type Long -Status $_.Status -Output String) + "`n"
         $mailMsg = $mailMsg + (Write-Log -Verb "Exception" -Noun $_.Exception -Path $log -Type Short -Status $_.Status -Output String) + "`n"
         $hasError = $true
-
     }else{
-
         Write-Log -Verb $_.Verb -Noun $_.Noun -Path $log -Type Long -Status $_.Status
-    
     }
-
 }
 
 Write-Line -Length 50 -Path $log
@@ -129,34 +112,25 @@ Write-Line -Length 50 -Path $log
 
 
 
-# Delete empty folders in ADPHOTO
+
+# 1.3 Delete empty folders in ADPHOTO
 
 Write-Log -Verb "START REMOVE EMPTY FOLDERS" -Noun $public_adphoto -Path $log -Type Long -Status System
 
-Get-ChildItemPlus $public_adphoto | Where-Object { 
-
+Get-ChildItem $public_adphoto -Recurse | Where-Object { 
      $_.PSIsContainer 
-
-} | Sort-Object -Descending | ForEach-Object{
-
+} | Sort-Object FullName -Descending | ForEach-Object{
     if((Get-ChildItem $_.FullName).Count -eq 0){
-
         try{
-
             $temp = $_.FullName
             Remove-Item $_ -Recurse -Force -ErrorAction Stop
             Write-Log -Verb "REMOVE" -Noun $temp -Path $log -Type Long -Status Good
-
         }catch{
-
             $mailMsg = $mailMsg + (Write-Log -Verb "REMOVE" -Noun $temp -Path $log -Type Long -Status Bad -Output String) + "`n"
             $mailMsg = $mailMsg + (Write-Log -Verb "Exception" -Noun $_.Exception.Message -Path $log -Type Short -Status Bad -Output String) + "`n"
             $hasError = $true
-
         }
-
     }
-
 }
 
 Write-Line -Length 50 -Path $log
@@ -164,102 +138,78 @@ Write-Line -Length 50 -Path $log
 
 
 
-# Rename files that contains brackets in ADTEXT
+
+# 2.1 Rename files that contains brackets in ADTEXT
 
 Write-Log -Verb "START REMOVE BRACKET" -Noun $public_adtext -Path $log -Type Long -Status System
 
-Get-ChildItemPlus $public_adtext | Sort-Object -Descending | ForEach-Object { 
-
+Get-ChildItem $public_adtext -Recurse | Sort-Object FullName -Descending | ForEach-Object { 
     if($_.BaseName -match "\["){
-
         Write-Log -Verb "HAS BRACKET" -Noun $_.FullName -Path $log -Type Long -Status Normal
-
         $newname = ($_.BaseName.Replace("[","(")).Replace("]",")") + "_r" + $_.Extension
         $parent  = Split-Path $_.FullName
         $newpath = Join-Path -Path $parent -ChildPath $newname
-
         Write-Log -Verb "newname" -Noun $newname -Path $log -Type Short -Status Normal
         Write-Log -Verb "newpath" -Noun $newpath -Path $log -Type Short -Status Normal
-
         try{
-
             Rename-Item -LiteralPath $_.FullName -NewName $newpath
             Write-Log -Verb "RENAME" -Noun $newpath -Path $log -Type Long -Status Good
-
         }catch{
-
             $mailMsg = $mailMsg + (Write-Log -Verb "RENAME" -Noun $newpath -Path $log -Type Long -Status Bad -Output String) + "`n"
             $mailMsg = $mailMsg + (Write-Log -Verb "Exception" -Noun $_.Exception -Path $log -Type Short -Status Bad -Output String) + "`n"
             $hasError = $true
-
         }
-
     }
-
-}
-
-
-
-
-# Move ADTEXT files
-
-Write-Log -Verb "START MOVE FILES" -Noun $public_adtext -Path $log -Type Long -Status System
-
-Get-ChildItemPlus $public_adtext | Where-Object { 
-
-    -not $_.PSIsContainer -and ($_.CreationTime -lt $campDate)
-
-} | Sort-Object -Descending | Move-Files -From $public -To $workPath | ForEach-Object{
-
-    Write-Log -Verb "moveFrom" -Noun $_.MoveFrom -Path $log -Type Short -Status Normal
-    Write-Log -Verb "moveTo" -Noun $_.MoveTo -Path $log -Type Short -Status Normal
-
-    if($_.Status -eq "Bad"){
-
-        $mailMsg = $mailMsg + (Write-Log -Verb $_.Verb -Noun $_.Noun -Path $log -Type Long -Status $_.Status -Output String) + "`n"
-        $mailMsg = $mailMsg + (Write-Log -Verb "Exception" -Noun $_.Exception -Path $log -Type Short -Status $_.Status -Output String) + "`n"
-        $hasError = $true
-
-    }else{
-
-        Write-Log -Verb $_.Verb -Noun $_.Noun -Path $log -Type Long -Status $_.Status
-    
-    }
-
 }
 
 Write-Line -Length 50 -Path $log
 
 
 
-# Delete empty folders in ADTEXT
+
+
+# 2.2 Move ADTEXT files
+
+Write-Log -Verb "START MOVE FILES" -Noun $public_adtext -Path $log -Type Long -Status System
+
+Get-ChildItem $public_adtext -Recurse | Where-Object { 
+    -not $_.PSIsContainer -and ($_.CreationTime -lt $campDate)
+} | Sort-Object FullName -Descending | Move-Files -From $public -To $workPath | ForEach-Object{
+    Write-Log -Verb "moveFrom" -Noun $_.MoveFrom -Path $log -Type Short -Status Normal
+    Write-Log -Verb "moveTo" -Noun $_.MoveTo -Path $log -Type Short -Status Normal
+    if($_.Status -eq "Bad"){
+        $mailMsg = $mailMsg + (Write-Log -Verb $_.Verb -Noun $_.Noun -Path $log -Type Long -Status $_.Status -Output String) + "`n"
+        $mailMsg = $mailMsg + (Write-Log -Verb "Exception" -Noun $_.Exception -Path $log -Type Short -Status $_.Status -Output String) + "`n"
+        $hasError = $true
+    }else{
+        Write-Log -Verb $_.Verb -Noun $_.Noun -Path $log -Type Long -Status $_.Status
+    }
+}
+
+Write-Line -Length 50 -Path $log
+
+
+
+
+
+# 2.3 Delete empty folders in ADTEXT
 
 Write-Log -Verb "START REMOVE EMPTY FOLDERS" -Noun $public_adtext -Path $log -Type Long -Status System
 
-Get-ChildItemPlus $public_adtext | Where-Object { 
-
+Get-ChildItem $public_adtext -Recurse | Where-Object { 
      $_.PSIsContainer
-
-} | Sort-Object -Descending | ForEach-Object{
-
+} | Sort-Object FullName -Descending | ForEach-Object{
     if((Get-ChildItem $_.FullName).Count -eq 0){
-
         try{
-
             $temp = $_.FullName
             Remove-Item $_ -Recurse -Force -ErrorAction Stop
             Write-Log -Verb "REMOVE" -Noun $temp -Path $log -Type Long -Status Good
-
         }catch{
-
             $mailMsg = $mailMsg + (Write-Log -Verb "REMOVE" -Noun $temp -Path $log -Type Long -Status Bad -Output String) + "`n"
             $mailMsg = $mailMsg + (Write-Log -Verb "Exception" -Noun $_.Exception.Message -Path $log -Type Short -Status Bad -Output String) + "`n"
             $hasError = $true
-
         }
-
     }
-
 }
 
 
