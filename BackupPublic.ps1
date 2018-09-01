@@ -123,7 +123,7 @@ Get-ChildItem $public_adphoto -Recurse | Where-Object {
     if((Get-ChildItem $_.FullName).Count -eq 0){
         try{
             $temp = $_.FullName
-            Remove-Item $_ -Recurse -Force -ErrorAction Stop
+            Remove-Item $_.FullName -Recurse -Force -ErrorAction Stop
             Write-Log -Verb "REMOVE" -Noun $temp -Path $log -Type Long -Status Good
         }catch{
             $mailMsg = $mailMsg + (Write-Log -Verb "REMOVE" -Noun $temp -Path $log -Type Long -Status Bad -Output String) + "`n"
@@ -202,7 +202,7 @@ Get-ChildItem $public_adtext -Recurse | Where-Object {
     if((Get-ChildItem $_.FullName).Count -eq 0){
         try{
             $temp = $_.FullName
-            Remove-Item $_ -Recurse -Force -ErrorAction Stop
+            Remove-Item $_.FullName -Recurse -Force -ErrorAction Stop
             Write-Log -Verb "REMOVE" -Noun $temp -Path $log -Type Long -Status Good
         }catch{
             $mailMsg = $mailMsg + (Write-Log -Verb "REMOVE" -Noun $temp -Path $log -Type Long -Status Bad -Output String) + "`n"
